@@ -86,3 +86,5 @@ The generate-manifest script does the following things (in pretty much the order
 - performs an xsl transform on all latest version .nuspec files to generate an html index of all latest versions of packages at *repo_root*/html/index.html
 
 Originaly from https://github.com/grenade/apache-nuget-repo on Fedora
+
+ docker pull tunisiano187/apache-nuget-repo
