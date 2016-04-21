@@ -42,8 +42,8 @@ RUN ln -s /data/repos /var/www/html/
 RUN service apache2 restart
 
 # Creating incron user table for the repository
-RUN cp misc/incron-nuget-repo.conf /var/spool/incron/$(whoami)
-RUN cp misc/incron-nuget-repo.conf /var/spool/incron/$(whoami)
+RUN cp /data/repos/nuget/misc/incron-nuget-repo.conf /var/spool/incron/$(whoami)
+RUN cp /data/repos/nuget/misc/incron-nuget-repo.conf /var/spool/incron/$(whoami)
 RUN chmod 600 /var/spool/incron/$(whoami)
 RUN service incrond restart
 
