@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM debian:stable
 
 # Pre configuration of postfix
 RUN echo "postfix postfix/mailname string di.bowlman.org" | debconf-set-selections
