@@ -34,7 +34,8 @@ RUN echo "        Require all granted" >> /etc/apache2/apache2.conf
 RUN echo "</Directory>" >> /etc/apache2/apache2.conf
 
 # Configuring apache2
-RUN cp /data/repos/nuget/misc/data.conf /etc/apache2/conf.d/
+RUN cp /data/repos/nuget/misc/data.conf /etc/apache2/conf-available/
+RUN a2enconf data
 RUN ln -s /data/repos /var/www/html/
 
 # Restart apache to take care of changes
