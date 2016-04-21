@@ -1,4 +1,4 @@
-# Apache NuGet Repository Hosting
+# Apache NuGet Repository Hosting - simple or dockerized
 
 These scripts and xsl transforms, enable hosting of a simple NuGet repository under Apache (on Linux).
 
@@ -18,11 +18,16 @@ These scripts and xsl transforms, enable hosting of a simple NuGet repository un
         # start incron
         sudo service incrond start
 
+- If you don't already have curl and git:
+
+        # install incron
+        sudo apt-get install -y curl git 
+
 - Create your repository:
 
         sudo mkdir -p /data/repos && sudo chown -R $(whoami):$(whoami) /data
         # clone this tool as your repository root
-        git clone https://github.com/grenade/apache-nuget-repo.git /data/repos/nuget
+        git clone https://github.com/tunisiano187/apache-nuget-repo.git /data/repos/nuget
         # create your packages folder
         mkdir /data/repos/nuget/nupkg
         # make generate-manifest executable
@@ -30,13 +35,16 @@ These scripts and xsl transforms, enable hosting of a simple NuGet repository un
 
 - Configure Apache to host your NuGet repo:
 
-        # if running `getenforce` returns 'Enforcing',
-        # run the following command to tell selinux to allow serving up the /data directory
-        sudo chcon -R -t httpd_sys_content_t /data
+        sudo echo "<Directory /sshfs-pointer-int/>" >> /etc/apache2/apache2.conf
+	sudo echo "        Options Indexes FollowSymLinks" >> /etc/apache2/apache2.conf
+	sudo echo "        AllowOverride None" >> /etc/apache2/apache2.conf
+	sudo echo "        Require all granted" >> /etc/apache2/apache2.conf
+	sudo echo "</Directory>" >> /etc/apache2/apache2.conf
+
         # modify /data/repos/nuget/misc/data.conf to your liking, then:
         sudo cp /data/repos/nuget/misc/data.conf /etc/httpd/conf.d/
         sudo ln -s /data/repos /var/www/html/
-        service apache2 restart
+        sudo service apache2 restart
 
 - Configure incron to regenerate the manifest when changes are detected
 
