@@ -42,8 +42,9 @@ These scripts and xsl transforms, enable hosting of a simple NuGet repository un
 	sudo echo "</Directory>" >> /etc/apache2/apache2.conf
 
         # modify /data/repos/nuget/misc/data.conf to your liking, then:
-        sudo cp /data/repos/nuget/misc/data.conf /etc/httpd/conf.d/
-        sudo ln -s /data/repos /var/www/html/
+        sudo cp /data/repos/nuget/misc/data.conf /etc/apache2/conf-available/
+        sudo a2enconf data
+	sudo ln -s /data/repos /var/www/html/
         sudo service apache2 restart
 
 - Configure incron to regenerate the manifest when changes are detected
