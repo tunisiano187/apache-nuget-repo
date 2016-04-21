@@ -5,4 +5,4 @@ before_script:
 
 build_image:
   script:
-    - docker build .
+    - docker build -t nuget .
