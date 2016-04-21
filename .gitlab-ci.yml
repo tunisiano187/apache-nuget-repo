@@ -1,7 +1,7 @@
 before_script:
   - docker info
-  - docker rm $(docker ps -a -q) >/dev/null 2>&1 
-  - docker rmi $(docker images -q) >/dev/null 2>&1 
+  - docker rm $(docker ps -a -q) >/dev/null 2>&1  | echo 0
+  - docker rmi $(docker images -q) >/dev/null 2>&1  | echo 0
 
 build_image:
   script:
