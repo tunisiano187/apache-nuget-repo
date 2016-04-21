@@ -84,3 +84,5 @@ The generate-manifest script does the following things (in pretty much the order
 - creates a *repo_root*/.htaccess file, containing 302 redirects from *repo_root*/package/*pkg_id* to the latest version of the package at *repo_root*/nupkg/*pkg_id*.*pkg_ver*.nupkg (NuGet convention for package downloads)
 - copies the .nuspec file for the latest version of each package to *repo_root*/latest/
 - performs an xsl transform on all latest version .nuspec files to generate an html index of all latest versions of packages at *repo_root*/html/index.html
+
+Originaly from https://github.com/grenade/apache-nuget-repo on Fedora
