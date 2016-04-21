@@ -1,4 +1,4 @@
-FROM ubuntu:stable
+FROM debian:stable
 
 # Pre configuration of postfix
 RUN echo "postfix postfix/mailname string di.bowlman.org" | debconf-set-selections
@@ -16,15 +16,15 @@ RUN echo "root : user@mail.com" >> /etc/aliases
 RUN newaliases
 
 # Create the repository
-RUN mkdir -p /data/repos && sudo chown -R $(whoami):$(whoami) /data
+RUN mkdir -p /data/repos && chown -R $(whoami):$(whoami) /data
 
 # Cloning repository
-git clone https://github.com/tunisiano187/apache-nuget-repo.git /data/repos/nuget
+RUN git clone https://github.com/tunisiano187/apache-nuget-repo.git /data/repos/nuget
 
 # Create repository packages folder
-mkdir /data/repos/nuget/nupkg
+RUN mkdir /data/repos/nuget/nupkg
 
-chmod u+x generate-manifest.sh
+RUN chmod u+x generate-manifest.sh
 
 # Force apache2 to accept this folder
 RUN echo"<Directory /sshfs-pointer-int/>" >> /etc/apache2/apache2.conf
