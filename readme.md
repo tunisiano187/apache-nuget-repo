@@ -2,25 +2,21 @@
 
 These scripts and xsl transforms, enable hosting of a simple NuGet repository under Apache (on Linux).
 
-## Installation (on Fedora)
+## Installation (on Ubuntu)
 
 - If you don't already have Apache:
 
         # install apache
-        sudo dnf install -y httpd
+        sudo apt-get install -y apache2
         # start apache
-        sudo service httpd start
-        # make apache start on system boot
-        sudo chkconfig httpd on
+        sudo service apache2 start
 
 - If you don't already have incron:
 
         # install incron
-        sudo dnf install -y incron
+        sudo apt-get install -y incron
         # start incron
         sudo service incrond start
-        # make incron start on system boot
-        sudo chkconfig incrond on
 
 - Create your repository:
 
@@ -40,7 +36,7 @@ These scripts and xsl transforms, enable hosting of a simple NuGet repository un
         # modify /data/repos/nuget/misc/data.conf to your liking, then:
         sudo cp /data/repos/nuget/misc/data.conf /etc/httpd/conf.d/
         sudo ln -s /data/repos /var/www/html/
-        service httpd restart
+        service apache2 restart
 
 - Configure incron to regenerate the manifest when changes are detected
 
