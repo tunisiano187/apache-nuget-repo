@@ -5,7 +5,7 @@ RUN echo "postfix postfix/mailname string di.bowlman.org" | debconf-set-selectio
 RUN echo "postfix postfix/main_mailer_type string 'Internet Site'" | debconf-set-selections
 
 # Install required packages
-RUN apt-get -y update && apt-get install -y apache2 git incron nano postfix
+RUN apt-get -y update && apt-get install -y apache2 curl git incron nano postfix
 
 # Start services on docker run
 RUN echo "/etc/init.d/apache2 restart" >> /etc/bash.bashrc
@@ -45,7 +45,7 @@ RUN service apache2 restart
 RUN cp /data/repos/nuget/misc/incron-nuget-repo.conf /var/spool/incron/$(whoami)
 RUN cp /data/repos/nuget/misc/incron-nuget-repo.conf /var/spool/incron/$(whoami)
 RUN chmod 600 /var/spool/incron/$(whoami)
-RUN service incrond restart
+RUN service incron restart
 
 RUN chmod u+x /data/repos/nuget/misc/download-some-packages.sh
 RUN cd /data/repos/nuget && ./misc/download-some-packages.sh
