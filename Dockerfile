@@ -27,11 +27,11 @@ RUN mkdir /data/repos/nuget/nupkg
 RUN chmod u+x /data/repos/nuget/generate-manifest.sh
 
 # Force apache2 to accept this folder
-RUN echo"<Directory /sshfs-pointer-int/>" >> /etc/apache2/apache2.conf
-RUN echo"        Options Indexes FollowSymLinks" >> /etc/apache2/apache2.conf
-RUN echo"        AllowOverride None" >> /etc/apache2/apache2.conf
-RUN echo"        Require all granted" >> /etc/apache2/apache2.conf
-RUN echo"</Directory>" >> /etc/apache2/apache2.conf
+RUN echo "<Directory /sshfs-pointer-int/>" >> /etc/apache2/apache2.conf
+RUN echo "        Options Indexes FollowSymLinks" >> /etc/apache2/apache2.conf
+RUN echo "        AllowOverride None" >> /etc/apache2/apache2.conf
+RUN echo "        Require all granted" >> /etc/apache2/apache2.conf
+RUN echo "</Directory>" >> /etc/apache2/apache2.conf
 
 # Configuring apache2
 RUN cp /data/repos/nuget/misc/data.conf /etc/apache2/conf.d/
