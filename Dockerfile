@@ -1,4 +1,4 @@
-FROM debian:stable
+FROM ubuntu
 
 # Pre configuration of postfix
 RUN echo "postfix postfix/mailname string di.bowlman.org" | debconf-set-selections
@@ -49,3 +49,4 @@ RUN service incron restart
 
 RUN chmod u+x /data/repos/nuget/misc/download-some-packages.sh
 RUN cd /data/repos/nuget && ./misc/download-some-packages.sh
+
