@@ -24,7 +24,7 @@ RUN git clone https://github.com/tunisiano187/apache-nuget-repo.git /data/repos/
 # Create repository packages folder
 RUN mkdir /data/repos/nuget/nupkg
 
-RUN chmod u+x generate-manifest.sh
+RUN chmod u+x /data/repos/nuget/generate-manifest.sh
 
 # Force apache2 to accept this folder
 RUN echo"<Directory /sshfs-pointer-int/>" >> /etc/apache2/apache2.conf
