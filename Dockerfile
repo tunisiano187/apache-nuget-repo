@@ -1,52 +1,70 @@
-FROM ubuntu
+FROM debian:stable
 
-# Pre configuration of postfix
-RUN echo "postfix postfix/mailname string di.bowlman.org" | debconf-set-selections
+# Redirection de apt sur notre mirroir local
+RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak
+#RUN sed -e 's/httpredir.debian.org/10.10.24.251:9999/g' /etc/apt/sources.list.bak > /etc/apt/sources.list
+RUN sed -e 's/httpredir.debian.org/mirror.bowlman.org/g' /etc/apt/sources.list.bak > /etc/apt/sources.list #ext
+
+# Pre configuration de postfix
+RUN echo "postfix postfix/mailname string dev.pedagogique.lan" | debconf-set-selections
 RUN echo "postfix postfix/main_mailer_type string 'Internet Site'" | debconf-set-selections
 
-# Install required packages
-RUN apt-get -y update && apt-get install -y apache2 curl git incron nano postfix
+# Pre configuration de mysql-serveur
+RUN echo "mysql-server mysql-server/root_password password tttttt" | debconf-set-selections
+RUN echo "mysql-server mysql-server/root_password_again password tttttt" | debconf-set-selections
 
-# Start services on docker run
+# Pre configuration de phpmyadmin
+RUN echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
+RUN echo "phpmyadmin phpmyadmin/app-password-confirm password tttttt" | debconf-set-selections
+RUN echo "phpmyadmin phpmyadmin/mysql/admin-pass password tttttt" | debconf-set-selections
+RUN echo "phpmyadmin phpmyadmin/mysql/app-pass password tttttt" | debconf-set-selections
+RUN echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
+
+# Installation des paquets necessaires
+RUN apt-get -y update && apt-get install -y apache2 expect php5 php5-mysql mysql-server nano postfix samba
+RUN service apache2 restart
+RUN service mysql restart
+#RUN apt-get -y install phpmyadmin
+
+# Lancement automatique de apache2
 RUN echo "/etc/init.d/apache2 restart" >> /etc/bash.bashrc
-RUN echo "/etc/init.d/incrond restart" >> /etc/bash.bashrc
+RUN echo "/etc/init.d/mysql restart" >> /etc/bash.bashrc
+RUN echo "apt-get -y install phpmyadmin" >> /etc/bash.bashrc
+RUN echo "/etc/init.d/apache2 restart" >> /etc/bash.bashrc
 
-# add administrator mail
-RUN echo "root : user@mail.com" >> /etc/aliases
+# Configuration de postfix
+RUN postconf -e relayhost=[smtp.technocite.be]
+ADD ./etc/aliases /etc/aliases
 RUN newaliases
 
-# Create the repository
-RUN mkdir -p /data/repos && chown -R $(whoami):$(whoami) /data
+# Ajout des fichiers de configuration de apache
+ADD ./etc/apache2/sites-available/dev.pedagogique.lan.conf /etc/apache2/sites-available/dev.pedagogique.lan.conf
+ADD ./etc/apache2/sites-available/virtu.conf /etc/apache2/sites-available/virtu.conf
 
-# Cloning repository
-RUN git clone https://github.com/tunisiano187/apache-nuget-repo.git /data/repos/nuget
+# Activaion des sites dans apache2
+RUN a2ensite dev.peda*
+RUN a2ensite virtu
 
-# Create repository packages folder
-RUN mkdir /data/repos/nuget/nupkg
+# Preparation des dossiers de logs
+RUN mkdir /var/log/apache2/virtu
 
-RUN chmod u+x /data/repos/nuget/generate-manifest.sh
+# Activation des modules apache2
+RUN a2enmod rewrite vhost_alias
+RUN a2dissite 000-default
 
-# Force apache2 to accept this folder
-RUN echo "<Directory /sshfs-pointer-int/>" >> /etc/apache2/apache2.conf
-RUN echo "        Options Indexes FollowSymLinks" >> /etc/apache2/apache2.conf
-RUN echo "        AllowOverride None" >> /etc/apache2/apache2.conf
-RUN echo "        Require all granted" >> /etc/apache2/apache2.conf
-RUN echo "</Directory>" >> /etc/apache2/apache2.conf
+# Preparation du site par defaut
+RUN mkdir /var/www/www
+ADD ./var/www/www /var/www/www/
+ADD ./var/www/index.php /var/www/index.php
+RUN chown -R www-data:www-data /var/www
 
-# Configuring apache2
-RUN cp /data/repos/nuget/misc/data.conf /etc/apache2/conf-available/
-RUN a2enconf data
-RUN ln -s /data/repos /var/www/html/
+# configuration de samba
+ADD ./etc/samba/smb.conf /etc/samba/smb.conf
+RUN service smbd restart
+RUN service nmbd restart
 
-# Restart apache to take care of changes
-RUN service apache2 restart
+# Activation de smba au demarrage
+RUN echo "service smbd restart" >> /etc/bash.bashrc
+RUN echo "service nmbd restart" >> /etc/bash.bashrc
 
-# Creating incron user table for the repository
-RUN cp /data/repos/nuget/misc/incron-nuget-repo.conf /var/spool/incron/$(whoami)
-RUN cp /data/repos/nuget/misc/incron-nuget-repo.conf /var/spool/incron/$(whoami)
-RUN chmod 600 /var/spool/incron/$(whoami)
-RUN service incron restart
-
-RUN chmod u+x /data/repos/nuget/misc/download-some-packages.sh
-RUN cd /data/repos/nuget && ./misc/download-some-packages.sh
-
+RUN service apache2 restart && service mysql restart && apt-get install -y -q phpmyadmin
